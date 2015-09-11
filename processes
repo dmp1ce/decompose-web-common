@@ -1,6 +1,7 @@
 # Provides common processes for web projects
 
-DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy' )
+DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
+  'restart_nginx_proxy')
 
 _decompose-process-env() {
   echo "$PROJECT_ENVIRONMENT"
@@ -11,14 +12,14 @@ _decompose-process-env_help() {
   echo "  Show environment setting"
 }
 
+
 _decompose-process-start_nginx_proxy() {
-  local nginx_proxy_id=$(docker ps --format "{{.ID}} {{.Image}}" | grep "jwilder/nginx-proxy" | cut -d " " -f1)
+  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
   if [ -n "$nginx_proxy_id" ]; then
     echo "nginx-proxy ($nginx_proxy_id) is already running"
     echo "Try stoping nginx-proxy first with 'decompose stop_nginx_proxy'"
     return 0
   fi
-  # TODO: Also search for 'nginx-proxy' label
   docker run --label "nginx_proxy" -d -p 80:80 -p 443:443 --restart="always" -e DEFAULT_HOST="$PROJECT_NGINX_DEFAULT_HOST" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
 }
 _decompose-process-start_nginx_proxy_help() {
@@ -26,16 +27,35 @@ _decompose-process-start_nginx_proxy_help() {
 }
 
 _decompose-process-stop_nginx_proxy() {
-  local nginx_proxy_id=$(docker ps --format "{{.ID}} {{.Image}}" | grep "jwilder/nginx-proxy" | cut -d " " -f1)
+  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
   if [ -n "$nginx_proxy_id" ]; then
     echo "Closing currently running proxy: $nginx_proxy_id"
     docker stop "$nginx_proxy_id"
   fi
-  # TODO: Also search for 'nginx-proxy' label
 }
 _decompose-process-stop_nginx_proxy_help() {
   echo "  Stop nginx-proxy"
 }
 
+_decompose-process-restart_nginx_proxy() {
+  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
+  if [ ! -n "$nginx_proxy_id" ]; then
+    echo "nginx-proxy ($nginx_proxy_id) is not running"
+    echo "Try starting nginx-proxy first with 'decompose start_nginx_proxy'"
+    return 0
+  fi
+  echo -n "Restarting nginx_proxy ... "
+  local restart_output=$(docker restart $nginx_proxy_id)
+  echo "done"
+}
+
+_decompose-process-restart_nginx_proxy_help() {
+  echo "  Restart nginx-proxy"
+}
+
+# Echo the nginx-proxy docker id
+_decompose-process_nginx_proxy_id() {
+  echo $(docker ps --filter "label=nginx_proxy" --format "{{.ID}}")
+}
 
 # vim:syntax=sh
