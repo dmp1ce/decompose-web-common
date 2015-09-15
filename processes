@@ -1,7 +1,8 @@
 # Provides common processes for web projects
 
 DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
-  'restart_nginx_proxy' 'import_tls_certificate' )
+  'restart_nginx_proxy' 'import_tls_certificate' 'start-reverse-proxy'
+   'update-production-server-to-latest' 'increment-tag' )
 
 _decompose-process-env() {
   echo "$PROJECT_ENVIRONMENT"
@@ -82,6 +83,94 @@ _decompose-process-import_tls_certificate() {
 }
 _decompose-process-import_tls_certificate_help() {
   echo "  Import TLS certificate and key to nginx-proxy"
+}
+
+_decompose-process-start-reverse-proxy() {
+  echo "Setting up reverse proxy at:"
+  echo "http://$PROJECT_REVERSE_PROXY_IP:$PROJECT_REVERSE_PROXY_PORT/"
+  ssh -R $PROJECT_REVERSE_PROXY_PORT:$PROJECT_WEBSITE_TO_EXPOSE_IP:$PROJECT_WEBSITE_TO_EXPOSE_PORT $PROJECT_REVERSE_PROXY_USER@$PROJECT_REVERSE_PROXY_IP
+}
+_decompose-process-start-reverse-proxy_help() {
+  echo "  Start a reverse proxy for testing IPNs and exposing local environment"
+}
+
+_decompose-process-increment-tag() {
+  # Verify that there are no version tags on at HEAD
+  # so we don't create more tags than we need
+  local head_version_tag=$(__decompose-process-latest-version-tag)
+
+  if [ $head_version_tag ]; then
+    echo "The version '$head_version_tag' already exists for HEAD"
+    return 1
+  fi
+
+  # Increment tag
+  local newtag=$(git describe --abbrev=0 --tags --match=v* | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+
+  git tag "$newtag"
+}
+_decompose-process-increment-tag_help() {
+  echo "  Increments the last tag and creates a new tag in git"
+}
+
+_decompose-process-update-production-server-to-latest() {
+  # Test that user can update production git repository successfully
+  echo "Testing user access to prodcution server..."
+  __decompose-process-update-production-repo || local fetch_failed=1
+  if [ $fetch_failed ]; then
+    echo "Access test failed!"
+    echo "Check your SSH access to the production server and source control."
+    exit 1
+  else
+    echo "Access test passed."
+  fi
+
+   increment the last tag
+  echo "Incrementing version tag..."
+  _decompose-process-increment-tag
+
+  # Push production to source control server
+  echo "Pushing local changes to source control server..."
+  git push && git push --tags
+
+  # Update decompose environment on server
+  echo "Update decompose evironment on production server..."
+  __decompose-process-ssh-command "decompose --update"
+
+  # Run ssh command to update server
+  echo "Rebuilding production environment..."
+  local latest_version_tag=$(__decompose-process-latest-version-tag)
+  __decompose-process-update-production-repo $latest_version_tag
+  __decompose-process-ssh-command "decompose build && decompose up"
+
+  echo "Done."
+}
+_decompose-process-update-production-server-to-latest_help() {
+  echo "  Update production to the latest code with the folloing steps:"
+  echo "  -------------------------------------------------------------"
+  echo "  1. Test connection to server"
+  echo "  2. Create new tag, incremented from the last tag"
+  echo "  3. Push latest code and tags"
+  echo "  4. Update code on production site"
+  echo "  5. Rebuild/recreate production containers"
+}
+
+# Parameters
+#   $1: command
+__decompose-process-ssh-command() {
+  ssh $PROJECT_PRODUCTION_SERVER_USER@$PROJECT_PRODUCTION_SERVER_IP \
+    "cd $PROJECT_PRODUCTION_SERVER_BASE_PATH && $1"
+}
+
+# Parameters
+#   #1: branch, tag or hash to checkout
+__decompose-process-update-production-repo() {
+  __decompose-process-ssh-command "git fetch && git checkout $1 && git submodule update --recursive"
+}
+
+# Print the latest version tag in repository. Pattern: vA.B.C
+__decompose-process-latest-version-tag() {
+  echo $(git describe --tags --candidates=0 --match=v* 2> /dev/null)
 }
 
 # Echo the nginx-proxy docker id
