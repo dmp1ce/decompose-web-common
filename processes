@@ -161,7 +161,7 @@ __decompose-process-ssh-command() {
 # Parameters
 #   #1: branch, tag or hash to checkout
 __decompose-process-update-production-repo() {
-  __decompose-process-ssh-command "git fetch && git checkout $1 && git submodule update --recursive"
+  __decompose-process-ssh-command "git fetch && git checkout $1 && git submodule update --init --recursive"
 }
 
 # Print the latest version tag in repository. Pattern: vA.B.C
