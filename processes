@@ -2,7 +2,7 @@
 
 DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
   'restart_nginx_proxy' 'import_tls_certificate' 'start-reverse-proxy'
-   'update-production-server-to-latest' 'increment-tag' )
+  'update-production-server-to-latest' 'increment-tag' )
 
 _decompose-process-env() {
   echo "$PROJECT_ENVIRONMENT"
