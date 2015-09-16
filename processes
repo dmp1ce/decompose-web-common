@@ -125,7 +125,7 @@ _decompose-process-update-production-server-to-latest() {
     echo "Access test passed."
   fi
 
-   increment the last tag
+  # Increment the last tag
   echo "Incrementing version tag..."
   _decompose-process-increment-tag
 
