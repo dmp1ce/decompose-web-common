@@ -133,10 +133,6 @@ _decompose-process-update-production-server-to-latest() {
   echo "Pushing local changes to source control server..."
   git push && git push --tags
 
-  # Update decompose environment on server
-  echo "Update decompose evironment on production server..."
-  __decompose-process-ssh-command "decompose --update"
-
   # Run ssh command to update server
   echo "Rebuilding production environment..."
   local latest_version_tag=$(__decompose-process-latest-version-tag)
