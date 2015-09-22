@@ -115,7 +115,7 @@ _decompose-process-increment-tag_help() {
 
 _decompose-process-update-production-server-to-latest() {
   # Test that user can update production git repository successfully
-  echo "Testing user access to prodcution server..."
+  echo "Testing user access to production server..."
   __decompose-process-update-production-repo || local fetch_failed=1
   if [ $fetch_failed ]; then
     echo "Access test failed!"
