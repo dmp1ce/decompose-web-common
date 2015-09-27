@@ -16,7 +16,7 @@ _decompose-process-env_help() {
 _decompose-process-ssh_production() {
   ssh $PROJECT_PRODUCTION_SERVER_USER@$PROJECT_PRODUCTION_SERVER_IP
 }
-_decompose-process-env_help() {
+_decompose-process-ssh_production_help() {
   echo "  SSH into production"
 }
 
