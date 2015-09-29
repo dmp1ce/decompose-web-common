@@ -122,8 +122,9 @@ _decompose-process-increment-tag_help() {
 
 _decompose-process-update-production-server-to-latest() {
   # Test that user can update production git repository successfully
-  echo "Testing user access to production server..."
-  __decompose-process-update-production-repo origin/master || local fetch_failed=1
+  echo "Testing user access to server:"
+  echo "$PROJECT_PRODUCTION_SERVER_USER@$PROJECT_PRODUCTION_SERVER_IP:$PROJECT_PRODUCTION_SERVER_BASE_PATH"
+  __decompose-process-update-production-repo || local fetch_failed=1
   if [ $fetch_failed ]; then
     echo "Access test failed!"
     echo "Check your SSH access to the production server and source control."
