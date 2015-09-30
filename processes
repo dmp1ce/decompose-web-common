@@ -65,11 +65,11 @@ _decompose-process-restart_nginx_proxy_help() {
 _decompose-process-import_tls_certificate() {
   local key_file=$1
   local certificate_file=$2
-  if [ ! -e "$key_file" ]; then
+  if [ ! -f "$key_file" ]; then
     echo "File '$key_file' does not exist"
     exit 1
   fi
-  if [ ! -e "$certificate_file" ]; then
+  if [ ! -f "$certificate_file" ]; then
     echo "File '$certificate_file' does not exist"
     exit 1
   fi
@@ -90,6 +90,11 @@ _decompose-process-import_tls_certificate() {
 }
 _decompose-process-import_tls_certificate_help() {
   echo "  Import TLS certificate and key to nginx-proxy"
+  echo "  Parameters:"
+  echo "    1: key"
+  echo "    2: certificate"
+  echo "NOTICE: Make sure the key and certificate files use VIRTUAL_HOST names."
+  echo "Example: 'foo.bar.com.crt' and 'foo.bar.com.key'"
 }
 
 _decompose-process-start-reverse-proxy() {
