@@ -118,7 +118,7 @@ _decompose-process-increment-tag() {
   fi
 
   # Increment tag - http://stackoverflow.com/a/8653732/350221
-  local newtag=$(git describe --abbrev=0 --tags --match=v* | awk -F. -v OFS=. 'NF>1{$NF++; print}'
+  local newtag=$(git describe --abbrev=0 --tags --match=v* | awk -F. -v OFS=. 'NF>1{$NF++; print}')
 
   git tag "$newtag"
 }
