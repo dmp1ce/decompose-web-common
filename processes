@@ -86,6 +86,7 @@ _decompose-process-import_tls_certificate() {
 
   docker cp "$key_file" $cid:/etc/nginx/certs
   docker cp "$certificate_file" $cid:/etc/nginx/certs
+  docker restart $cid
   echo "done"
 }
 _decompose-process-import_tls_certificate_help() {
