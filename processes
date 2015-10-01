@@ -2,12 +2,18 @@
 
 DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
   'restart_nginx_proxy' 'import_tls_certificate' 'start-reverse-proxy'
-  'update-production-server-to-latest' 'increment-tag' 'ssh_production' )
+  'update-production-server-to-latest' 'increment-tag' 'ssh_production'
+  'generate_nginx_proxy_configs' )
 
 _decompose-process-env() {
   echo "$PROJECT_ENVIRONMENT"
   echo "PRODUCTION: $PRODUCTION"
   echo "DEVELOPMENT: $DEVELOPMENT"
+  echo ""
+  echo "Virtual host: $PROJECT_NGINX_VIRTUAL_HOST"
+  echo "Virtual host alts: $PROJECT_NGINX_VIRTUAL_HOST_ALTS"
+  echo "nginx-proxy virtual hosts string:"
+  echo "  $PROJECT_NGINX_PROXY_VIRTUAL_HOSTS"
 }
 _decompose-process-env_help() {
   echo "  Show environment setting"
@@ -169,6 +175,39 @@ _decompose-process-update-production-server-to-latest_help() {
   echo "  3. Push latest code and tags"
   echo "  4. Update code on production site"
   echo "  5. Rebuild/recreate production containers"
+}
+
+_decompose-process-generate_nginx_proxy_configs() {
+  echo "Generating nginx-proxy configs..."
+
+  local nginx_proxy_dir="$(_decompose-project-root)/containers/nginx_proxy/"
+
+  test -f "$nginx_proxy_dir/proxy_virtual_host.conf" && \
+  cp "$nginx_proxy_dir/proxy_virtual_host.conf" \
+  "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf"
+
+  test -f "$nginx_proxy_dir/proxy_virtual_host.key" && \
+  cp "$nginx_proxy_dir/proxy_virtual_host.key" \
+    "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key"
+
+  test -f "$nginx_proxy_dir/proxy_virtual_host.crt" && \
+  cp "$nginx_proxy_dir/proxy_virtual_host.crt" \
+  "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt"
+
+  for vhost_alt in $PROJECT_NGINX_VIRTUAL_HOST_ALTS; do
+    test -f "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf" && \
+    ln -srf "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf" \
+      "$nginx_proxy_dir/vhost.d/$vhost_alt"".conf"
+    test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" && \
+    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" \
+      "$nginx_proxy_dir/certs/$vhost_alt"".key"
+    test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" && \
+    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" \
+      "$nginx_proxy_dir/certs/$vhost_alt"".crt"
+  done
+}
+_decompose-process-generate_nginx_proxy_configs_help() {
+  echo "  Generate nginx-proxy configurations"
 }
 
 # Parameters
