@@ -38,8 +38,8 @@ PROJECT_REVERSE_PROXY_IP=""
 PROJECT_REVERSE_PROXY_PORT="44443"
 
 # Backup settings
-PROJECT_BACKUP_GPG_KEY_DEV="disabled"
-PROJECT_BACKUP_TARGET_DEV="file:///home/duply/backup"
+PROJECT_BACKUP_GPG_KEY="disabled"
+PROJECT_BACKUP_TARGET="file:///home/duply/backup"
 
 ELEMENTS_WEB_POST_PROCESS=( 'web-post' )
 
