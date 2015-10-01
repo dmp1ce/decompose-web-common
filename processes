@@ -184,7 +184,7 @@ _decompose-process-generate_nginx_proxy_configs() {
 
   test -f "$nginx_proxy_dir/proxy_virtual_host.conf" && \
   cp "$nginx_proxy_dir/proxy_virtual_host.conf" \
-  "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf"
+  "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"
 
   test -f "$nginx_proxy_dir/proxy_virtual_host.key" && \
   cp "$nginx_proxy_dir/proxy_virtual_host.key" \
@@ -195,9 +195,9 @@ _decompose-process-generate_nginx_proxy_configs() {
   "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt"
 
   for vhost_alt in $PROJECT_NGINX_VIRTUAL_HOST_ALTS; do
-    test -f "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf" && \
-    ln -srf "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST"".conf" \
-      "$nginx_proxy_dir/vhost.d/$vhost_alt"".conf"
+    test -f "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" && \
+    ln -srf "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" \
+      "$nginx_proxy_dir/vhost.d/$vhost_alt"
     test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" && \
     ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" \
       "$nginx_proxy_dir/certs/$vhost_alt"".key"
