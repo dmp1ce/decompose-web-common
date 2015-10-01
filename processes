@@ -27,7 +27,13 @@ _decompose-process-start_nginx_proxy() {
     echo "Try stoping nginx-proxy first with 'decompose stop_nginx_proxy'"
     return 0
   fi
-  docker run --label "nginx_proxy" -d -p 80:80 -p 443:443 --restart="always" -e DEFAULT_HOST="$PROJECT_NGINX_DEFAULT_HOST" -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
+  # Look for nginx-proxy data container
+  local nginx_proxy_data_id=$(docker ps -a --filter "label=nginx_proxy_data" --format "{{.ID}}")
+  if [ -z "$nginx_proxy_data_id" ]; then
+    # If no nginx-proxy data container exists then create it
+    local nginx_proxy_data_id=$(docker run --label "nginx_proxy_data" --label "data_container=true" -d -v /etc/nginx/certs -v /etc/nginx/vhost.d busybox true)
+  fi
+  docker run --label "nginx_proxy" -d -p 80:80 -p 443:443 --restart="always" -e DEFAULT_HOST="$PROJECT_NGINX_DEFAULT_HOST" --volumes-from=$nginx_proxy_data_id -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
 }
 _decompose-process-start_nginx_proxy_help() {
   echo "  Start nginx-proxy which can host multiple sites"
