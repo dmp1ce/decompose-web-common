@@ -50,6 +50,6 @@ _decompose-elements-web-post() {
     export DEVELOPMENT=true; unset PRODUCTION
   fi
 
-  PROJECT_NGINX_PROXY_VIRTUAL_HOSTS=$(echo "$PROJECT_NGINX_VIRTUAL_HOST $PROJECT_NGINX_VIRTUAL_HOST_ALTS" | tr ' ' ,)
+  PROJECT_NGINX_PROXY_VIRTUAL_HOSTS=$(echo "$PROJECT_NGINX_VIRTUAL_HOST $PROJECT_NGINX_VIRTUAL_HOST_ALTS" | xargs echo | tr "[:blank:]" ,)
 }
 # vim:syntax=sh
