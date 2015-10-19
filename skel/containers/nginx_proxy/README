@@ -4,3 +4,9 @@ They will be used when 'decompose up' is run.
 proxy_virtual_host.conf
 proxy_virtual_host.key
 proxy_virtual_host.crt
+
+The default nginx-proxy settings can also be changed on a proxy wide basis using the following file:
+
+proxy.conf
+
+BEWARE, changing this file might effect other sites using the proxy. Try not use this file if possible.
