@@ -165,7 +165,14 @@ _decompose-process-update-production-server-to-latest() {
   __decompose-process-update-production-repo $latest_version_tag
   __decompose-process-ssh-command "decompose build && decompose up"
 
-  echo "Done."
+  echo "Website updated complete."
+
+  # Remove old Docker images
+  if [ "$(type -t _decompose-process-remove-untagged-docker-images)" == "function" ]; then
+    __decompose-process-ssh-command "decompose remove-untagged-docker-images"
+  fi
+
+  echo "Done!"
 }
 _decompose-process-update-production-server-to-latest_help() {
   echo "  Update production to the latest code with the folloing steps:"
