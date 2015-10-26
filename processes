@@ -201,6 +201,10 @@ _decompose-process-generate_nginx_proxy_configs() {
   cp "$nginx_proxy_dir/proxy_virtual_host.crt" \
   "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt"
 
+  test -f "$nginx_proxy_dir/proxy_virtual_host.dhparam.pem" && \
+  cp "$nginx_proxy_dir/proxy_virtual_host.dhparam.pem" \
+  "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem"
+
   for vhost_alt in $PROJECT_NGINX_VIRTUAL_HOST_ALTS; do
     test -f "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" && \
     ln -srf "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" \
@@ -211,6 +215,9 @@ _decompose-process-generate_nginx_proxy_configs() {
     test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" && \
     ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" \
       "$nginx_proxy_dir/certs/$vhost_alt"".crt"
+    test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" && \
+    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" \
+      "$nginx_proxy_dir/certs/$vhost_alt"".dhparam.pem"
   done
 }
 _decompose-process-generate_nginx_proxy_configs_help() {
