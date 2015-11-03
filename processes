@@ -167,6 +167,9 @@ _decompose-process-update-production-server-to-latest() {
 
   echo "Website updated complete."
 
+  # Backup current configuration.
+  __decompose-process-ssh-command "decompose backup_config"
+
   # Remove old Docker images
   if [ "$(type -t _decompose-process-remove-untagged-docker-images)" == "function" ]; then
     __decompose-process-ssh-command "decompose remove-untagged-docker-images"
