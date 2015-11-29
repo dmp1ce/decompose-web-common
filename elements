@@ -22,6 +22,9 @@ PROJECT_SENDMAIL_PATH="cat >> /tmp/mail.out"
 # Possible production sendmail_path
 #PROJECT_SENDMAIL_PATH="/usr/bin/msmtp -C /etc/msmtp_php -t"
 
+# Log driver for Docker
+PROJECT_DOCKER_LOG_DRIVER="journald"
+
 # Docker PHP version
 PROJECT_PHP_VERSION="fpm"
 
