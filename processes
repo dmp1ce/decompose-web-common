@@ -125,6 +125,11 @@ _decompose-process-restart_nginx_proxy_help() {
   echo "  Restart nginx-proxy"
 }
 
+# DEPRECATED
+# in favor of _decompose-process-nginx_proxy_up and
+# an _decompose-process-generate_nginx_proxy_configs
+#
+# Manually import TLS certificates to container.
 _decompose-process-import_tls_certificate() {
   local key_file=$1
   local certificate_file=$2
@@ -153,12 +158,16 @@ _decompose-process-import_tls_certificate() {
   echo "done"
 }
 _decompose-process-import_tls_certificate_help() {
+  echo "  DEPRECATED!"
+  echo "  Instead copy certificates to containers/nginx_proxy"
+  echo "  and run 'decompose build && decompose up'"
+  echo ""
   echo "  Import TLS certificate and key to nginx-proxy"
   echo "  Parameters:"
   echo "    1: key"
   echo "    2: certificate"
-  echo "NOTICE: Make sure the key and certificate files use VIRTUAL_HOST names."
-  echo "Example: 'foo.bar.com.crt' and 'foo.bar.com.key'"
+  echo "  NOTICE: Make sure the key and certificate files use VIRTUAL_HOST names."
+  echo "  Example: 'foo.bar.com.crt' and 'foo.bar.com.key'"
 }
 
 _decompose-process-start-reverse-proxy() {
