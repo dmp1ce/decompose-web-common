@@ -305,4 +305,48 @@ _decompose-process_nginx_proxy_status() {
   echo $(docker inspect --format="{{.State.Status}}" nginx_proxy)
 }
 
+# Build nginx_proxy
+_decompose-process_nginx_proxy_build() {
+  echo "Creating version file..."
+  local project_root=$(_decompose-project-root)
+  local git_base_revision="`git -C $project_root describe --tags --match=v* --always --dirty 2>&1`"
+  # Set current base version
+  echo -e "$PROJECT_ENVIRONMENT\n$git_base_revision\n\n$(date)" > \
+    "$project_root"/"$PROJECT_VERSION_FILE"
+
+  echo "Updating nginx_proxy image..."
+  docker pull "$PROJECT_NGINX_PROXY_IMAGE"
+
+  # Generate nginx-proxy configurations
+  _decompose-process-generate_nginx_proxy_configs
+}
+
+# Start nginx proxy
+_decompose-process_nginx_proxy_up() {
+  # Restart nginx_proxy if the image changed
+  local nginx_proxy_cid=$(_decompose-process_nginx_proxy_id)
+  local nginx_proxy_container_iid=$(docker inspect --format "{{.Image}}" $nginx_proxy_cid)
+  local nginx_proxy_image_id=$(docker inspect --format "{{.Id}}" $PROJECT_NGINX_PROXY_IMAGE)
+  if [ "$nginx_proxy_container_iid" != "$nginx_proxy_image_id" ]; then
+    echo "$PROJECT_NGINX_PROXY_IMAGE hash changed."
+    _decompose-process-recreate_nginx_proxy
+  else
+    _decompose-process-restart_nginx_proxy
+  fi
+
+  # Get nginx_proxy container id
+  local nginx_proxy_cid=$(_decompose-process_nginx_proxy_id)
+  # Copy configuration files to nginx-proxy
+  local nginx_proxy_dir="$(_decompose-project-root)/containers/nginx_proxy"
+  test -d "$nginx_proxy_dir/vhost.d" &&
+  docker cp "$nginx_proxy_dir"/vhost.d/. $nginx_proxy_cid:/etc/nginx/vhost.d
+  test -d "$nginx_proxy_dir/certs" &&
+  docker cp $nginx_proxy_dir/certs/. $nginx_proxy_cid:/etc/nginx/certs
+  test -f "$nginx_proxy_dir/proxy.conf" &&
+  docker cp $nginx_proxy_dir/proxy.conf $nginx_proxy_cid:/etc/nginx/proxy.conf
+
+  # Restart nginx-proxy to pick up possible certification changes
+  _decompose-process-restart_nginx_proxy
+}
+
 # vim:syntax=sh
