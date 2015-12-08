@@ -334,7 +334,9 @@ _decompose-process_nginx_proxy_build() {
 _decompose-process_nginx_proxy_up() {
   # Restart nginx_proxy if the image changed
   local nginx_proxy_cid=$(_decompose-process_nginx_proxy_id)
-  local nginx_proxy_container_iid=$(docker inspect --format "{{.Image}}" $nginx_proxy_cid)
+  if [ ! -z "$nginx_proxy_cid" ]; then
+    local nginx_proxy_container_iid=$(docker inspect --format "{{.Image}}" $nginx_proxy_cid)
+  fi
   local nginx_proxy_image_id=$(docker inspect --format "{{.Id}}" $PROJECT_NGINX_PROXY_IMAGE)
   if [ "$nginx_proxy_container_iid" != "$nginx_proxy_image_id" ]; then
     echo "$PROJECT_NGINX_PROXY_IMAGE hash changed."
