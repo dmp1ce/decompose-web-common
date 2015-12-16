@@ -1,7 +1,7 @@
 # Provides common processes for web projects
 
 DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
-  'restart_nginx_proxy' 'import_tls_certificate' 'start-reverse-proxy'
+  'restart_nginx_proxy' 'start-reverse-proxy'
   'update-production-server-to-latest' 'increment-tag' 'ssh_production'
   'generate_nginx_proxy_configs' 'recreate_nginx_proxy' )
 
@@ -114,51 +114,6 @@ _decompose-process-restart_nginx_proxy() {
 
 _decompose-process-restart_nginx_proxy_help() {
   echo "  Restart nginx-proxy"
-}
-
-# DEPRECATED
-# in favor of _decompose-process-nginx_proxy_up and
-# an _decompose-process-generate_nginx_proxy_configs
-#
-# Manually import TLS certificates to container.
-_decompose-process-import_tls_certificate() {
-  local key_file=$1
-  local certificate_file=$2
-  if [ ! -f "$key_file" ]; then
-    echo "File '$key_file' does not exist"
-    exit 1
-  fi
-  if [ ! -f "$certificate_file" ]; then
-    echo "File '$certificate_file' does not exist"
-    exit 1
-  fi
-
-  local cid=$(_decompose-process_nginx_proxy_id)
-  if [ ! -n "$cid" ]; then
-    echo "nginx-proxy is not running"
-    echo "First start nginx-proxy with 'deocmpose start_nginx_proxy'"
-    return 1
-  fi
-
-  echo "NOTICE: Make sure the key and certificate files use VIRTUAL_HOST names."
-  echo "Example: 'foo.bar.com.crt' and 'foo.bar.com.key'"
-
-  docker cp "$key_file" $cid:/etc/nginx/certs
-  docker cp "$certificate_file" $cid:/etc/nginx/certs
-  docker restart $cid
-  echo "done"
-}
-_decompose-process-import_tls_certificate_help() {
-  echo "  DEPRECATED!"
-  echo "  Instead copy certificates to containers/nginx_proxy"
-  echo "  and run 'decompose build && decompose up'"
-  echo ""
-  echo "  Import TLS certificate and key to nginx-proxy"
-  echo "  Parameters:"
-  echo "    1: key"
-  echo "    2: certificate"
-  echo "  NOTICE: Make sure the key and certificate files use VIRTUAL_HOST names."
-  echo "  Example: 'foo.bar.com.crt' and 'foo.bar.com.key'"
 }
 
 _decompose-process-start-reverse-proxy() {
