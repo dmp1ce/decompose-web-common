@@ -30,6 +30,30 @@ $ cat processes
 source $(_decompose-project-root)/.decompose/environment/lib/web/processes
 ```
 
+## Nginx Proxy
+
+Nginx proxy, is a container which is a endpoint for web services running on port 80 with Docker. See [nginx proxy processes](#nginx-proxy-processes) for details on how to use nginx proxy with this environment. See [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy) for more details on how the nginx proxy works. Custom nginx proxy images can be used by changing the `PROJECT_NGINX_PROXY_IMAGE` element.
+
+Nginx proxy is configured by both adding environment variables to containers and by copying files into nginx proxy. For the file copying part, specially named files can be placed in `containers/nginx_proxy` directory. These files are explained in the `containers/nginx_proxy/README` file.
+
+## Reverse Proxy
+
+With an SSH server setup, a reverse proxy can be setup to tunnel a port to the SSH server. Use the [reverse proxy elements](#reverse-proxy-settings) and the `start-reverse-proxy` process to use this feature. In order to forward expose port 80 or 443 on the remote SSH server, you may have to configure `/etc/ssh/sshd_config` to set `GatewayPorts yes`.
+
+A reverse proxy can be useful to test a API callbacks or show others local development.
+
+## Update production
+
+Use `update-production-server-to-latest` process to update a production server set by the [production server](#production-server) elements. Updating the production server using this method follows the following steps:
+
+1. Test connection to server
+2. Create new tag, incremented from the last tag
+3. Push latest code and tags
+4. Update code on production site
+5. Rebuild/recreate production containers
+6. Backup decompose configuration using `backup_config` process
+7. Remove old Docker images using `remove-untagged-docker-images` process
+
 ## Elements
 
 - `PROJECT_ENVIRONMENT` : The current environment. Only supports the values `development` or `production`. Default is `development`.
@@ -67,6 +91,7 @@ Used to establish a reverse proxy for exposing website to the internet through a
 
 ### Other elements
 
+- `PROJECT_NGINX_PROXY_IMAGE` : Specify the nginx proxy image to use. Default is `jwilder/nginx-proxy`.
 - `PROJECT_DOCKER_LOG_DRIVER` : Specify the Docker logging driver to use. Default is `journald`.
 
 ### Special elements
@@ -105,27 +130,3 @@ These functions can be used inside your custom processes.
 - `_decompose-process_nginx_proxy_status` : Echo the current nginx_proxy container status.
 - `_decompose-process_nginx_proxy_build` : Build nginx proxy container and generate nginx proxy configuration files.
 - `_decompose-process_nginx_proxy_up` : Start nginx proxy no matter what state it is currently in and update configuration files in container.
-
-## Nginx Proxy
-
-Nginx proxy, is a container which is a endpoint for web services running on port 80 with Docker. See [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy).
-
-Nginx proxy is configured by both adding environment variables to containers and by copying files into nginx proxy. For the file copying part, specially named files can be placed in `containers/nginx_proxy` directory. These files explained in the `containers/nginx_proxy/README` file.
-
-## Reverse Proxy
-
-With an SSH server setup, a reverse proxy can be setup to tunnel a port to the SSH server. Use the [reverse proxy elements](#reverse-proxy-settings) and the `start-reverse-proxy` process to use this feature. In order to forward expose port 80 or 443 on the remote SSH server, you may have to configure `/etc/ssh/sshd_config` to set `GatewayPorts yes`.
-
-A reverse proxy can be useful to test a API callbacks or show others local development.
-
-## Update production
-
-Use `update-production-server-to-latest` process to update a production server set by the [production server](#production-server) elements. Updating the production server using this method follows the following steps:
-
-1. Test connection to server
-2. Create new tag, incremented from the last tag
-3. Push latest code and tags
-4. Update code on production site
-5. Rebuild/recreate production containers
-6. Backup decompose configuration using `backup_config` process
-7. Remove old Docker images using `remove-untagged-docker-images` process
