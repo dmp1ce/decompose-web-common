@@ -184,13 +184,15 @@ _decompose-process-update-production-server-to-latest() {
   echo "Done!"
 }
 _decompose-process-update-production-server-to-latest_help() {
-  echo "  Update production to the latest code with the folloing steps:"
+  echo "  Update production to the latest code with the following steps:"
   echo "  -------------------------------------------------------------"
   echo "  1. Test connection to server"
   echo "  2. Create new tag, incremented from the last tag"
   echo "  3. Push latest code and tags"
   echo "  4. Update code on production site"
   echo "  5. Rebuild/recreate production containers"
+  echo "  6. Backup decompose configuration using 'backup_config' process"
+  echo "  7. Remove old Docker images using 'remove-untagged-docker-images' process"
 }
 
 _decompose-process-generate_nginx_proxy_configs() {
