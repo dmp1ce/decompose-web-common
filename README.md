@@ -22,7 +22,7 @@ $ git submodule add https://github.com/dmp1ce/decompose-web-common.git lib/commo
 
 Then make your `processes` and `elements` file look like this:
 ``` bash
-$ cat elments
+$ cat elements
 # Include common elements
 source $(_decompose-project-root)/.decompose/environment/lib/web/elements
 $ cat processes
