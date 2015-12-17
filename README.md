@@ -62,6 +62,7 @@ Use `update-production-server-to-latest` process to update a production server s
 
 - `PROJECT_NGINX_VIRTUAL_HOST` : The main domain name for the website. Default is `mysite.local`.
 - `PROJECT_NGINX_VIRTUAL_HOST_ALTS` : All of the alternate domain names which are redirected to `PROJECT_NGINX_VIRTUAL_HOST` domain name. Multiple names are seperated by space (` `) character. Default is `www.mysite.local alt_mysite.local www.alt_mysite.local`
+- `PROJECT_NGINX_DEFAULT_HOST` : The default virtual host to use for the nginx proxy.
 
 ### Source paths
 
