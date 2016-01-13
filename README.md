@@ -111,7 +111,6 @@ See [nginx proxy section](#nginx-proxy).
 - `start_nginx_proxy` : Starts nginx proxy container.
 - `stop_nginx_proxy` : Stops nginx proxy container.
 - `restart_nginx_proxy` : Restarts nginx proxy container.
-- `recreate_nginx_proxy` : Recreate nginx proxy container.
 - `generate_nginx_proxy_configs` : Generates nginx proxy configs based on what is in the nginx_proxy container folder.
 
 ### Other processes
