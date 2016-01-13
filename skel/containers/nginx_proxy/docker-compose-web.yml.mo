@@ -4,8 +4,10 @@ proxy:
   container_name: nginx_proxy
   labels:
     - "nginx_proxy"
+{{#PROJECT_NGINX_DEFAULT_HOST}}
   environment:
     - DEFAULT_HOST={{PROJECT_NGINX_DEFAULT_HOST}}
+{{/PROJECT_NGINX_DEFAULT_HOST}}
   volumes:
     - nginx_proxy_certs:/etc/nginx/certs
     - nginx_proxy_vhosts:/etc/nginx/vhost.d
