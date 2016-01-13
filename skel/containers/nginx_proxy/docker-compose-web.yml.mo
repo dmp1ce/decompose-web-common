@@ -21,8 +21,6 @@ letsencrypt:
   container_name: nginx_proxy_letsencrypt_companion
   labels:
     - "nginx_proxy_letsencrypt_companion"
-  environment:
-    - DEBUG=true
   volumes:
     - nginx_proxy_certs:/etc/nginx/certs:rw
     - /var/run/docker.sock:/var/run/docker.sock:ro
