@@ -1,9 +1,11 @@
 # Provides common processes for web projects
 
 DECOMPOSE_WEB_PROCESSES=( 'env' 'start_nginx_proxy' 'stop_nginx_proxy'
-  'restart_nginx_proxy' 'start-reverse-proxy'
+  'restart_nginx_proxy' 'nginx_proxy_status' 'nginx_proxy_docker_compose'
+  'start-reverse-proxy'
   'update-production-server-to-latest' 'increment-tag' 'ssh_production'
-  'generate_nginx_proxy_configs' 'recreate_nginx_proxy' )
+  'generate_nginx_proxy_configs' )
+
 
 _decompose-process-env() {
   echo "$PROJECT_ENVIRONMENT"
@@ -26,94 +28,46 @@ _decompose-process-ssh_production_help() {
   echo "  SSH into production"
 }
 
-_decompose-process-start_nginx_proxy() {
-  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
-  if [ -n "$nginx_proxy_id" ]; then
-    local nginx_proxy_status=$(_decompose-process_nginx_proxy_status)
-    case "$nginx_proxy_status" in
-    "running")
-      echo "nginx-proxy ($nginx_proxy_id) is already running"
-      return 0
-      ;;
-    "exited")
-      echo "nginx-proxy ($nginx_proxy_id) has exited. Will restart nginx-proxy."
-      _decompose-process-restart_nginx_proxy
-      return 0
-      ;;
-    *)
-      echo "nginx-proxy is in the state '$nginx_proxy_status'. Doing nothing."
-      return 0
-      ;;
-    esac
+_decompose-process-nginx_proxy_docker_compose(){
+  if [ -z "$1" ]; then
+    exit 1
   fi
 
-  docker run -d \
-    --name="nginx_proxy" \
-    --log-driver=$PROJECT_DOCKER_LOG_DRIVER \
-    --label "nginx_proxy" -p 80:80 -p 443:443 \
-    --restart="always" \
-    -e DEFAULT_HOST="$PROJECT_NGINX_DEFAULT_HOST" \
-    -v nginx_proxy_certs:/etc/nginx/certs \
-    -v nginx_proxy_vhosts:/etc/nginx/vhosts.d \
-    -v /var/run/docker.sock:/tmp/docker.sock:ro \
-    $PROJECT_NGINX_PROXY_IMAGE
+  local params="$@"
+  local nginx_proxy_dir="$(_decompose-project-root)/containers/nginx_proxy"
+  docker-compose -f "${nginx_proxy_dir}/docker-compose-web.yml" ${params}
+}
+_decompose-process-nginx_proxy_docker_compose_help() {
+  echo "  Run docker-compose for nginx_proxy."
+  echo "  Example: 'decompose nginx_proxy_docker_compose ps -q"
+}
+
+_decompose-process-nginx_proxy_status() {
+  _decompose-process-nginx_proxy_docker_compose ps
+}
+_decompose-process-nginx_proxy_status_help() {
+  echo "  Status of the nginx_proxy (docker-compose ps)"
+}
+
+_decompose-process-start_nginx_proxy() {
+  _decompose-process-nginx_proxy_docker_compose up -d
 }
 _decompose-process-start_nginx_proxy_help() {
   echo "  Start nginx-proxy which can host multiple sites"
 }
 
-_decompose-process-recreate_nginx_proxy() {
-  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
-  # Remove old container if necessary
-  if [ -n "$nginx_proxy_id" ]; then
-    echo "Removing current nginx_proxy: $nginx_proxy_id"
-    docker stop "$nginx_proxy_id" > /dev/null
-    docker rm "$nginx_proxy_id" > /dev/null
-  fi
-  _decompose-process-start_nginx_proxy
+_decompose-process-restart_nginx_proxy() {
+  _decompose-process-nginx_proxy_docker_compose restart
 }
-_decompose-process-recreate_nginx_proxy_help() {
-  echo "  Recreate (stop, remove and start) nginx-proxy"
+_decompose-process-restart_nginx_proxy_help() {
+  echo "  Restart nginx-proxy"
 }
 
 _decompose-process-stop_nginx_proxy() {
-  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
-  if [ -n "$nginx_proxy_id" ]; then
-    local nginx_proxy_status=$(_decompose-process_nginx_proxy_status)
-    case "$nginx_proxy_status" in
-    "running")
-      echo "Closing currently running proxy: $nginx_proxy_id"
-      docker stop "$nginx_proxy_id"
-      ;;
-    "exited")
-      echo "nginx-proxy is already stopped."
-      ;;
-    *)
-      echo "nginx-proxy is in the state '$nginx_proxy_status'. Doing nothing."
-      ;;
-    esac
-  fi
+  _decompose-process-nginx_proxy_docker_compose stop
 }
 _decompose-process-stop_nginx_proxy_help() {
   echo "  Stop nginx-proxy"
-}
-
-_decompose-process-restart_nginx_proxy() {
-  local nginx_proxy_id=$(_decompose-process_nginx_proxy_id)
-  if [ ! -n "$nginx_proxy_id" ]; then
-    echo "Previous nginx-proxy could not be found"
-    echo -n "Starting nginx-proxy... "
-    _decompose-process-start_nginx_proxy
-    return 0
-  else
-    echo -n "Restarting nginx_proxy ... "
-    local restart_output=$(docker restart $nginx_proxy_id)
-  fi
-  echo "done"
-}
-
-_decompose-process-restart_nginx_proxy_help() {
-  echo "  Restart nginx-proxy"
 }
 
 _decompose-process-start-reverse-proxy() {
@@ -253,19 +207,10 @@ __decompose-process-latest-version-tag() {
   echo $(git describe --tags --candidates=0 --match=v* 2> /dev/null)
 }
 
-# Echo the nginx-proxy docker id
-_decompose-process_nginx_proxy_id() {
-  echo $(docker ps --filter "label=nginx_proxy" --format "{{.ID}}" -a)
-}
-# Echo the nginx-proxy docker status
-_decompose-process_nginx_proxy_status() {
-  echo $(docker inspect --format="{{.State.Status}}" nginx_proxy)
-}
-
 # Build nginx_proxy
 _decompose-process_nginx_proxy_build() {
-  echo "Updating nginx_proxy image..."
-  docker pull "$PROJECT_NGINX_PROXY_IMAGE"
+  echo -n "Updating nginx_proxy related images... "
+  _decompose-process-nginx_proxy_docker_compose pull
 
   # Generate nginx-proxy configurations
   _decompose-process-generate_nginx_proxy_configs
@@ -274,20 +219,12 @@ _decompose-process_nginx_proxy_build() {
 # Start nginx proxy
 _decompose-process_nginx_proxy_up() {
   # Restart nginx_proxy if the image changed
-  local nginx_proxy_cid=$(_decompose-process_nginx_proxy_id)
-  if [ ! -z "$nginx_proxy_cid" ]; then
-    local nginx_proxy_container_iid=$(docker inspect --format "{{.Image}}" $nginx_proxy_cid)
-  fi
-  local nginx_proxy_image_id=$(docker inspect --format "{{.Id}}" $PROJECT_NGINX_PROXY_IMAGE)
-  if [ "$nginx_proxy_container_iid" != "$nginx_proxy_image_id" ]; then
-    echo "$PROJECT_NGINX_PROXY_IMAGE hash changed."
-    _decompose-process-recreate_nginx_proxy
-  else
-    _decompose-process-restart_nginx_proxy
-  fi
+  echo -n "Ensuring nginx_proxy is running... "
+  _decompose-process-start_nginx_proxy
 
+  echo -n "Coping nginx_proxy configuration... "
   # Get nginx_proxy container id
-  local nginx_proxy_cid=$(_decompose-process_nginx_proxy_id)
+  local nginx_proxy_cid=$(_decompose-process-nginx_proxy_docker_compose ps -q proxy)
   # Copy configuration files to nginx-proxy
   local nginx_proxy_dir="$(_decompose-project-root)/containers/nginx_proxy"
   test -d "$nginx_proxy_dir/vhost.d" &&
@@ -296,7 +233,9 @@ _decompose-process_nginx_proxy_up() {
   docker cp $nginx_proxy_dir/certs/. $nginx_proxy_cid:/etc/nginx/certs
   test -f "$nginx_proxy_dir/proxy.conf" &&
   docker cp $nginx_proxy_dir/proxy.conf $nginx_proxy_cid:/etc/nginx/proxy.conf
+  echo "done"
 
+  echo -n "Restarting nginx_proxy to load possible configuration changes... "
   # Restart nginx-proxy to pick up possible certification changes
   _decompose-process-restart_nginx_proxy
 }
