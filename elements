@@ -12,6 +12,7 @@ PROJECT_SOURCE_CONTAINER_PATH="/srv/http/source"
 
 # nginx proxy Docker image
 PROJECT_NGINX_PROXY_IMAGE="jwilder/nginx-proxy"
+PROJECT_NGINX_PROXY_LETSENCRYPT_IMAGE="jrcs/letsencrypt-nginx-proxy-companion"
 
 # Mail SMTP Service
 PROJECT_SMTP_HOST=""
