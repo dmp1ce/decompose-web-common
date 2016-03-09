@@ -209,6 +209,7 @@ __decompose-process-latest-version-tag() {
 
 # Build nginx_proxy
 _decompose-process_nginx_proxy_build() {
+  _decompose-process-build_version_file
   echo -n "Updating nginx_proxy related images... "
   _decompose-process-nginx_proxy_docker_compose pull
 
