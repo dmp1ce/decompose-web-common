@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/dmp1ce/decompose-web-common.svg?branch=master)](https://travis-ci.org/dmp1ce/decompose-web-common)
 # decompose-web-common
 Some common code for web development decompose environments
 
