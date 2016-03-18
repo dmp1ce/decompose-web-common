@@ -1,0 +1,2 @@
+source $(_decompose-project-root)/.decompose/environment/lib/web/processes
+DECOMPOSE_PROCESSES=( "${DECOMPOSE_WEB_PROCESSES[@]}" )
