@@ -14,7 +14,7 @@ function setup_testing_environment() {
  
   # Setup build test environment
   cp -r "$BATS_TEST_DIRNAME/../../." "$tmpdir/build-test-environment"
-  rm "$tmpdir/build-test-environment/.git"
+  mv "$tmpdir/build-test-environment/.git" "$BATS_TMPDIR/$(uuidgen)"
   local git_url=$(realpath $tmpdir/build-test-environment)
   git -C "$git_url" init
   git -C "$git_url" config user.email "tester@example.com"
