@@ -1,0 +1,3 @@
+# Include common processes
+source $(_decompose-project-root)/.decompose/environment/processes
+DECOMPOSE_PROCESSES=( "${DECOMPOSE_WEB_PROCESSES[@]}" )

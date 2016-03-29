@@ -1,0 +1,5 @@
+# Include common elements
+source $(_decompose-project-root)/.decompose/environment/elements
+
+# journald not available in container.
+PROJECT_DOCKER_LOG_DRIVER=none
