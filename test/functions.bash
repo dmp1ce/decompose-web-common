@@ -22,7 +22,7 @@ function run_tests() {
 decompose-docker-web-testing-tester"
 
   $tester_image ls -alh /app
-  $tester_image bats /app/skel/bats/
+  $tester_image bats /app/skel/bats/web
 }
 
 function teardown_testing_environment() {
