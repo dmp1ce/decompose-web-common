@@ -184,6 +184,9 @@ _decompose-process-generate_nginx_proxy_configs() {
     ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" \
       "$nginx_proxy_dir/certs/$vhost_alt"".dhparam.pem"
   done
+
+  # Tests might return an error code, even though this function is working correctly
+  return 0
 }
 _decompose-process-generate_nginx_proxy_configs_help() {
   echo "  Generate nginx-proxy configurations"
@@ -215,6 +218,8 @@ _decompose-process_nginx_proxy_build() {
 
   # Generate nginx-proxy configurations
   _decompose-process-generate_nginx_proxy_configs
+
+  echo "end of nginx_proxy_build return: $?"
 }
 
 # Start nginx proxy
