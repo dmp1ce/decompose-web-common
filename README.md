@@ -71,7 +71,6 @@ These elements are used to make it easy to reference source files throughout the
 
 - `PROJECT_SOURCE_PATH` : The relative path to the website source from the source Dockerfile. Default is `source`.
 - `PROJECT_SOURCE_HOST_PATH` : The relative path to the website source from the decompose root. Default is `"./containers/source/"$PROJECT_SOURCE_PATH`.
-- `PROJECT_SOURCE_CONTAINER_PATH` : The absolute path to the source in the built container. Default is `/srv/http/source`.
 
 ### Production server
 

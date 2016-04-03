@@ -7,8 +7,7 @@ PROJECT_NGINX_VIRTUAL_HOST_ALTS="www.mysite.local alt_mysite.local www.alt_mysit
 
 # Source paths
 PROJECT_SOURCE_PATH="source"
-PROJECT_SOURCE_HOST_PATH="./containers/source/"$PROJECT_SOURCE_PATH
-PROJECT_SOURCE_CONTAINER_PATH="/srv/http/source"
+PROJECT_SOURCE_HOST_PATH="$(_decompose-project-root)/containers/source/"$PROJECT_SOURCE_PATH
 
 # nginx proxy Docker image
 PROJECT_NGINX_PROXY_IMAGE="jwilder/nginx-proxy"
