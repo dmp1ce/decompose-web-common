@@ -26,7 +26,7 @@ decompose-docker-web-testing-tester"
 
 function teardown_testing_environment() {
   echo "Teardown Docker testing environment ..."
-  testing_env_cleanup=$(docker rm -f decompose-docker-web-testing)
+  testing_env_cleanup=$(docker rm -fv decompose-docker-web-testing)
   [ "$?" == "1" ] && echo "$testing_env_cleanup"
 
   local tmp_tester_build="/tmp/decompose-docker-web-testing"
