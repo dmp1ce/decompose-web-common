@@ -21,8 +21,7 @@ function run_tests() {
   local tester_image="docker run --rm --link decompose-docker-web-testing:docker \
 decompose-docker-web-testing-tester"
 
-  $tester_image ls -alh /app
-  $tester_image bats /app/skel/bats/web
+  $tester_image bats /app/test/bats
 }
 
 function teardown_testing_environment() {
