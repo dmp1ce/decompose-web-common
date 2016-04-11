@@ -218,8 +218,6 @@ _decompose-process_nginx_proxy_build() {
 
   # Generate nginx-proxy configurations
   _decompose-process-generate_nginx_proxy_configs
-
-  echo "end of nginx_proxy_build return: $?"
 }
 
 # Start nginx proxy
