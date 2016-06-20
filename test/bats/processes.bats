@@ -17,6 +17,30 @@ load "$BATS_TEST_DIRNAME/bats_functions.bash"
   [ "$status" -eq 0 ]
 }
 
+@test "Increment version tag" {
+  cd "$WORKING"
+
+  # Commit
+  touch "hello123"
+  git add .
+  git config user.email "tester@example.com"
+  git config user.name "Tester"
+  git commit -m "Initial commit"
+  # Create a tag
+  git tag v1.0
+  # Commit again
+  echo "Change here" >> "hello123"
+  git add .
+  git commit -m "Change here"
+  # Increment tag
+  run decompose increment-tag
+  # Verify tag was incremented
+  [ "$(git describe --abbrev=0 --tags)" == "v1.1" ]
+
+  echo "$output"
+  [ "$status" -eq 0 ]
+}
+
 function setup() {
   setup_testing_environment
 } 

@@ -5,6 +5,10 @@ PROJECT_ENVIRONMENT="development"
 PROJECT_NGINX_VIRTUAL_HOST="mysite.local"
 PROJECT_NGINX_VIRTUAL_HOST_ALTS="www.mysite.local alt_mysite.local www.alt_mysite.local"
 
+# Version tag settings
+PROJECT_VERSION_TAG_MATCH="v*"
+PROJECT_VERSION_TAG_BRANCH="master"
+
 # Source paths
 PROJECT_SOURCE_PATH="source"
 PROJECT_SOURCE_HOST_PATH="$(_decompose-project-root)/containers/source/"$PROJECT_SOURCE_PATH

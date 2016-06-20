@@ -90,7 +90,7 @@ _decompose-process-increment-tag() {
   fi
 
   # Increment tag - http://stackoverflow.com/a/8653732/350221
-  local newtag=$(git describe --abbrev=0 --tags --match=v* | awk -F. -v OFS=. 'NF>1{$NF++; print}')
+  local newtag=$(git describe --abbrev=0 --tags --match=$PROJECT_VERSION_TAG_MATCH $PROJECT_VERSION_TAG_BRANCH | awk -F. -v OFS=. 'NF>1{$NF++; print}')
 
   git tag "$newtag"
 }
@@ -207,7 +207,7 @@ __decompose-process-update-production-repo() {
 
 # Print the latest version tag in repository. Pattern: vA.B.C
 __decompose-process-latest-version-tag() {
-  echo $(git describe --tags --candidates=0 --match=v* 2> /dev/null)
+  echo $(git describe --tags --candidates=0 --match=$PROJECT_VERSION_TAG_MATCH $PROJECT_VERSION_TAG_BRANCH 2> /dev/null)
 }
 
 # Build nginx_proxy
