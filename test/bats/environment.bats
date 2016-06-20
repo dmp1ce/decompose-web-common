@@ -16,6 +16,13 @@
   [ "$status" -eq 0 ]
 }
 
+@test "'awk' exists" {
+  run awk --version
+
+  echo "$output"
+  [ "$status" -eq 0 ]
+}
+
 @test "'chmod --reference' works" {
   mkdir -p "$BATS_TMPDIR/$BATS_TEST_NAME"
   cd "$BATS_TMPDIR/$BATS_TEST_NAME"

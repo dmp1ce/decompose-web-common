@@ -7,7 +7,7 @@ MAINTAINER David Parrish <daveparrish@tutanota.com>
 RUN mkdir -p /opt/decompose && \
 apt-get update && \
 apt-get install -y --no-install-recommends \
-  git-core curl uuid-runtime apt-transport-https ca-certificates && \
+  git-core curl uuid-runtime apt-transport-https ca-certificates gawk && \
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 \
   --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
 echo "deb https://apt.dockerproject.org/repo debian-jessie main" \
