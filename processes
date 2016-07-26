@@ -131,8 +131,8 @@ _decompose-process-update-production-server-to-latest() {
   __decompose-process-ssh-command "decompose backup_config"
 
   # Remove old Docker images
-  if [ "$(type -t _decompose-process-remove-untagged-docker-images)" == "function" ]; then
-    __decompose-process-ssh-command "decompose remove-untagged-docker-images"
+  if [ "$(type -t _decompose-process-remove-dangling-docker-images)" == "function" ]; then
+    __decompose-process-ssh-command "decompose remove-dangling-docker-images"
   fi
 
   echo "Done!"
@@ -146,7 +146,7 @@ _decompose-process-update-production-server-to-latest_help() {
   echo "  4. Update code on production site"
   echo "  5. Rebuild/recreate production containers"
   echo "  6. Backup decompose configuration using 'backup_config' process"
-  echo "  7. Remove old Docker images using 'remove-untagged-docker-images' process"
+  echo "  7. Remove old Docker images using 'remove-dangling-docker-images' process"
 }
 
 _decompose-process-generate_nginx_proxy_configs() {

@@ -53,7 +53,7 @@ Use `update-production-server-to-latest` process to update a production server s
 4. Update code on production site
 5. Rebuild/recreate production containers
 6. Backup decompose configuration using `backup_config` process
-7. Remove old Docker images using `remove-untagged-docker-images` process
+7. Remove old Docker images using `remove-dangling-docker-images` process
 
 ## Elements
 
