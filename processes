@@ -172,17 +172,16 @@ _decompose-process-generate_nginx_proxy_configs() {
 
   for vhost_alt in $PROJECT_NGINX_VIRTUAL_HOST_ALTS; do
     test -f "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" && \
-    ln -srf "$nginx_proxy_dir/vhost.d/$PROJECT_NGINX_VIRTUAL_HOST" \
-      "$nginx_proxy_dir/vhost.d/$vhost_alt"
+    ln -sf "$PROJECT_NGINX_VIRTUAL_HOST" "$nginx_proxy_dir/vhost.d/$vhost_alt"
+
     test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" && \
-    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".key" \
-      "$nginx_proxy_dir/certs/$vhost_alt"".key"
+    ln -sf "$PROJECT_NGINX_VIRTUAL_HOST"".key" "$nginx_proxy_dir/certs/$vhost_alt"".key"
+
     test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" && \
-    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".crt" \
-      "$nginx_proxy_dir/certs/$vhost_alt"".crt"
+    ln -sf "$PROJECT_NGINX_VIRTUAL_HOST"".crt" "$nginx_proxy_dir/certs/$vhost_alt"".crt"
+
     test -f "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" && \
-    ln -srf "$nginx_proxy_dir/certs/$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" \
-      "$nginx_proxy_dir/certs/$vhost_alt"".dhparam.pem"
+    ln -sf "$PROJECT_NGINX_VIRTUAL_HOST"".dhparam.pem" "$nginx_proxy_dir/certs/$vhost_alt"".dhparam.pem"
   done
 
   # Tests might return an error code, even though this function is working correctly
